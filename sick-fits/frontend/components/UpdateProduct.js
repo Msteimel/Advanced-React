@@ -35,20 +35,24 @@ const UPDATE_PRODUCT_MUTATION = gql`
 `;
 
 export default function UpdateProduct({ id }) {
-  // 1. We need to get the existing product
+  // 1. Need to get the existing product
   const { data, error, loading } = useQuery(SINGLE_PRODUCT_QUERY, {
     variables: { id },
   });
-  // 2. We need to get the mutation to update the product
+  // 2. Get mutation to update the product
   const [
     updateProduct,
     { data: updateData, error: updateError, loading: updateLoading },
-  ] = useMutation(UPDATE_PRODUCT_MUTATION);
-  // 2.5 Create some state for the form inputs:
+  ] = useMutation(UPDATE_PRODUCT_MUTATION, {
+    variables: {
+      id,
+      // TODO: pass in updates to products here
+    },
+  });
+  // 2.5 create state for form inputs
   const { inputs, handleChange, clearForm, resetForm } = useForm(data?.Product);
-  console.log(inputs);
-  if (loading) return <p>loading...</p>;
-  // 3. We need the form to handle the updates
+  if (loading) return <p>Loading...</p>;
+  // 3. Need form to handle Updates
   return (
     <Form
       onSubmit={async e => {
@@ -56,20 +60,13 @@ export default function UpdateProduct({ id }) {
         const res = await updateProduct({
           variables: {
             id,
-            name: inputs.name,
-            description: inputs.description,
-            price: inputs.price,
+            data: {
+              name: inputs.name,
+              description: inputs.description,
+              price: inputs.price,
+            },
           },
-        }).catch(console.error);
-        console.log(res);
-        // Submit the inputfields to the backend:
-        // TODO: Handle Submit!!!
-        // const res = await createProduct();
-        // clearForm();
-        // // Go to that product's page!
-        // Router.push({
-        //   pathname: `/product/${res.data.createProduct.id}`,
-        // });
+        }).catch(console.log(console.error));
       }}
     >
       <DisplayError error={error || updateError} />
@@ -91,7 +88,7 @@ export default function UpdateProduct({ id }) {
             type="number"
             id="price"
             name="price"
-            placeholder="price"
+            placeholder="10.00"
             value={inputs.price}
             onChange={handleChange}
           />
@@ -106,8 +103,13 @@ export default function UpdateProduct({ id }) {
             onChange={handleChange}
           />
         </label>
-
-        <button type="submit">Update Product</button>
+        {/* <button type="button" onClick={clearForm}>
+        Clear Form
+        </button>
+        <button type="button" onClick={resetForm}>
+        Reset Form
+      </button> */}
+        <button type="submit">+ Update Product</button>
       </fieldset>
     </Form>
   );
