@@ -4,7 +4,6 @@ export default function paginationField() {
   return {
     keyArgs: false, // tells apollo we will take care of everything
     read(existing = [], { args, cache }) {
-      console.log({ existing, args, cache });
       const { skip, first } = args;
 
       // Read the number of items on the page from the cache
@@ -31,9 +30,6 @@ export default function paginationField() {
 
       // If there are items, just reutrn them from the cache, and we don't need to go to the network
       if (items.length) {
-        console.log(
-          `There are ${items.length} items in the cache! Gonna send them to apollo`
-        );
         return items;
       }
 
